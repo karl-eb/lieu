@@ -399,11 +399,13 @@ class NameAddressDeduper(AddressDeduper):
             return duplicate_status.EXACT_DUPLICATE, 1.0
         elif word_index:
             name_fuzzy_dupe_class, name_sim = cls.name_dupe_similarity(a1_name, a2_name, word_index=word_index, languages=languages)
-
-            if with_phone_number:
-                name_fuzzy_dupe_class = PhoneNumberDeduper.revised_dupe_class(name_fuzzy_dupe_class, a1, a2)
-            if name_fuzzy_dupe_class >= name_dupe_class:
-                return name_fuzzy_dupe_class, name_sim
+            try:
+                if with_phone_number:
+                    name_fuzzy_dupe_class = PhoneNumberDeduper.revised_dupe_class(name_fuzzy_dupe_class, a1, a2)
+                if name_fuzzy_dupe_class >= name_dupe_class:
+                    return name_fuzzy_dupe_class, name_sim
+            except TypeError:
+                pass
 
         if name_dupe_class == duplicate_status.LIKELY_DUPLICATE:
             name_sim = likely_dupe_threshold
